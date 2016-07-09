@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
 
-app.set('port', (process.env.PORT)|| 3000))
+app.set('port', (process.env.PORT)|| 3000)
 
 app.use(bodyParser.urlencoded({extended: false}))
 
@@ -19,7 +19,6 @@ app.get('/webhook/', function(req, res) {
         res.send(req.query['hub.challenge'])
     }
     res.send('Error, wrong token')
-  })
 })
 
 app.listen(app.get('port'), function() {
