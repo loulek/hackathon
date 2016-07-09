@@ -44,7 +44,7 @@ const token = "EAACGElIklxMBAGeo6OyZBOOPCudxZCun6dF7noz5P3HixXIzeZClJNDkzQLAFZCy
 function sendTextMessage(sender, text) {
   let messageData = {text: text}
   request({
-    url: 'http://graph.facebook.com/v2.6/me/messages',
+    url: 'https://graph.facebook.com/v2.6/me/messages',
     qs: {access_token: token},
     method: 'POST',
     json: {
