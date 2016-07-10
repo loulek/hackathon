@@ -28,11 +28,16 @@ app.listen(app.get('port'), function() {
 
 app.post('/webhook/', function(req, res){
   console.log("REQ.BODY===============", req.body)
+
   let messaging_events = req.body.entry[0].messaging
   for (let i = 0; i < messaging_events.length; i ++) {
     let event = req.body.entry[0].messaging[i]
     let sender = event.sender.id
+
     if (event.message && event.message.text) {
+      console.log("EVENT MESSAGE=====    =======    ======", event.message);
+      console.log("EVENT MESSAGE=====    =======    ======", event.message.text);
+
       // let text = event.message.text
       sendTextMessages(sender, ["Hello there, I am Pam, your personal assistant. Let's set you up", "I'll help you get up in the mornings and fulfill your personal goals"])
       resToMorningRoutine(sender)
@@ -45,13 +50,23 @@ app.post('/webhook/', function(req, res){
       console.log("EVENT POSTBACK PAYLOAD===========", event.postback.payload)
       let text = event.postback.payload
       if (text === 'yes') {
+        console.log("MOTHERFUCKING ===========")
         sendTextMessages(sender, ["Meditation, pushups, tea? What's one thing you should you be doing every morning?", "For example, you could respond 'Meditation for 10 minutes', or... 'Read for 20 minutes'?"])
         if (event.postback) {
           let text = event.postback.payload
-          // startMorningRoutine(sender, text)
-
-          // var user = new User
-
+          var user = new User({
+            facebookId: req.body.entry[0].id,
+            routine: text
+          })
+          user.save(function (err){
+            if(err){
+              console.log('ERROR================')
+            }
+            else{
+              console.log("USER ADDED ===================");
+            }
+          });
+//later add
         }
       } else if (text === 'no') {
 
@@ -98,8 +113,8 @@ function resToMorningRoutine(sender) {
                 "buttons": [{
                       "type": "postback",
                       // "url": "https://www.messenger.com",
-                      "payload": "Yeah!",
-                      "title": "yes"
+                      "payload": "yes",
+                      "title": "Yeah!"
                   }, {
                       "type": "postback",
                       "title": "No thanks",
