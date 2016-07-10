@@ -34,7 +34,12 @@ var userSchema = mongoose.Schema({
   initializeList:{
     type: Boolean,
     default: false
-  }
+  },
+  morningRoutine:{
+    type: Boolean,
+    default: false
+  },
+
 });
 userSchema.plugin(findOrCreate);
 module.exports = {User: mongoose.model('User', userSchema)};

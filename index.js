@@ -85,7 +85,7 @@ app.post('/webhook/', function(req, res){
             }
           } else{
             console.log("YAYAY");
-            console.log("event", event);
+            console.log("eventwadfasrgaewgfasdfasgas", event);
             console.log(req.body.entry[0].messaging)
             if (event.message && event.message.text && !user.initializeList){
               somethingFun(sender, "This adorable video should wake you up!", 'http://clips.vorwaerts-gmbh.de/VfE_html5.mp4')
@@ -93,49 +93,52 @@ app.post('/webhook/', function(req, res){
               console.log("SUCCESS===========================       =======");
 
             }
-            if (event.postback) {
+            if (event.postback && !user.morningRoutine) {
               var text2 = event.postback.payload
               if (text2 === 'Start morning routine'){
                 button(sender, "Cool, let's get started!", 'Finished', 'Skip for today');
                 //make timers later
+                user.morningRoutine=true;
               }
               if (text2 === 'Finished' || text2 === 'Skip for today' || text2 === 'Start working'){
                 sendTextMessages(sender,["Great, what do you have to do today?", "Separate tasks by comma since I'm dumb"]);
                 user.initializeList=true;
                 user.save(); //every day initalize list resets
               }
-          };
-          if(event.message && event.message.text && user.initializeList){
-            console.log("SUCCESS2===========================       =======");
-            console.log("EVENT.MESSAGE=====    =======    ======", event.message);
-            console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
-            var listArr = event.message.text.split(',');
-            for(var i = 0; i < listArr.length; i++){
-              user.list.push(listArr[i]);
+            };
+            if(event.message && event.message.text && user.initializeList){
+              console.log("SUCCESS2===========================       =======");
+              console.log("EVENT.MESSAGE=====    =======    ======", event.message);
+              console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
+              var listArr = event.message.text.split(',');
+              for(var i = 0; i < listArr.length; i++){
+                user.list.push(listArr[i]);
+              }
+              user.save(function (err, user){
+                if(err){
+                  console.log('ERROR================')
+                }
+                else {
+                  multiButton(sender, 'Awesome! What would you like to start?', user.list)
+                  console.log("List Added ===================");
+                  console.log('event.loggggg', event.postback)
+
+                }
+              });
             }
-            user.save(function (err, user){
-              if(err){
-                console.log('ERROR================')
+            console.log('EVENTTTTTTTTTT============', event);
+            if(event.postback.payload.indexOf('elete')){
+              for(var i = 0; i < user.list.length; i++){
+                var payloa = parseInt(event.postback.payload.slice(event.postback.payload.length-2))
+                console.log("PAYLOAD=========",payloa);
+                if(i === payloa){
+                  user.list.splice(i,1)
+                  user.save();
+                  multiButton(sender, 'Here is your updated list:', user.list);
+                }
               }
-              else {
-                multiButton(sender, 'Awesome! What would you like to start?', user.list)
-                console.log("List Added ===================");
-              }
-            });
-          }
-          console.log(event);
-          // if(event.postback.payload.indexOf('elete')){
-          //   for(var i = 0; i < user.list.length; i++){
-          //     var payload = parseInt(event.postback.payload.slice(event.postback.payload.length-2))
-          //     console.log("PAYLOAD=========",payload);
-          //     if(i === payload){
-          //       user.list.splice(i,1)
-          //       user.save();
-          //       multiButton(sender, 'Here is your updated list:', user.list);
-          //     }
-          //   }
-          //   return;
-          // }
+              return;
+            }
       }
       return res.sendStatus(200)
     }
@@ -236,7 +239,7 @@ function somethingFun(sender, text, url) {
 }
 
 function button(sender, text, button1, button2) {
-    let messageData = {
+    var messageData = {
         "attachment": {
             "type": "template",
             "payload": {
@@ -296,8 +299,6 @@ function multiButton(sender, text, arr) {
       }
       messageData.attachment.payload.buttons.push(buton)
     }
-
-
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
         qs: {access_token:token},
