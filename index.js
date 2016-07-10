@@ -45,12 +45,13 @@ app.post('/webhook/', function(req, res){
     console.log('event', event)
     if (event.postback) {
       console.log("EVENT POSTBACK ", event.postback)
-      let text = JSON.stringify(event.postback)
+      let text = event.postback.payload
       if (text === 'yes') {
         sendTextMessage(sender, "Meditation, pushups, tea? What's one thing you should you be doing every morning?")
         sendTextMessage(sender, "For example, you could respond 'Meditation for 10 minutes', or... 'Read for 20 minutes'?")
         continue
       } else if (text === 'no') {
+        sendTextMessage(sender, "options.hat's one thing you should you be doing every morning?")
 
       }
     }
@@ -119,43 +120,43 @@ function resToMorningRoutine(sender) {
     })
 }
 
-function resToMorningRoutine(sender) {
-    let messageData = {
-        "attachment": {
-            "type": "template",
-            "payload": {
-                "template_type": "generic",
-                "elements": [{
-                    "title": "Awesome! Do you have a morning routine you'd like to stick to?",
-                    "subtitle": "hihi",
-                    // "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
-                    "buttons": [{
-                        "type": "postback",
-                        // "url": "https://www.messenger.com",
-                        "payload": "Payload for first element in a generic bubble",
-                        "title": "yes"
-                    }, {
-                        "type": "postback",
-                        "title": "no",
-                        "payload": "Payload for first element in a generic bubble",
-                    }]
-                }]
-            }
-        }
-    }
-    request({
-        url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: {access_token:token},
-        method: 'POST',
-        json: {
-            recipient: {id:sender},
-            message: messageData,
-        }
-    }, function(error, response, body) {
-        if (error) {
-            console.log('Error sending messages: ', error)
-        } else if (response.body.error) {
-            console.log('Error: ', response.body.error)
-        }
-    })
-}
+// function resToMorningRoutine(sender) {
+//     let messageData = {
+//         "attachment": {
+//             "type": "template",
+//             "payload": {
+//                 "template_type": "generic",
+//                 "elements": [{
+//                     "title": "Awesome! Do you have a morning routine you'd like to stick to?",
+//                     "subtitle": "hihi",
+//                     // "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
+//                     "buttons": [{
+//                         "type": "postback",
+//                         // "url": "https://www.messenger.com",
+//                         "payload": "Payload for first element in a generic bubble",
+//                         "title": "yes"
+//                     }, {
+//                         "type": "postback",
+//                         "title": "no",
+//                         "payload": "Payload for first element in a generic bubble",
+//                     }]
+//                 }]
+//             }
+//         }
+//     }
+//     request({
+//         url: 'https://graph.facebook.com/v2.6/me/messages',
+//         qs: {access_token:token},
+//         method: 'POST',
+//         json: {
+//             recipient: {id:sender},
+//             message: messageData,
+//         }
+//     }, function(error, response, body) {
+//         if (error) {
+//             console.log('Error sending messages: ', error)
+//         } else if (response.body.error) {
+//             console.log('Error: ', response.body.error)
+//         }
+//     })
+// }
