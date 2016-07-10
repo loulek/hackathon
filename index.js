@@ -66,7 +66,7 @@ function sendTextMessage(sender, text) {
   })
 }
 
-function sendGenericMessage(sender) {
+function resToMorningRoutine(sender) {
     let messageData = {
         "attachment": {
             "type": "template",
