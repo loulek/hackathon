@@ -3,6 +3,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
+var User = require('../models/user');
 
 app.set('port', (process.env.PORT)|| 3000)
 
@@ -26,6 +27,7 @@ app.listen(app.get('port'), function() {
 })
 
 app.post('/webhook/', function(req, res){
+  console.log(req.body)
   console.log('received webhook');
   let messaging_events = req.body.entry[0].messaging
   for (let i = 0; i < messaging_events.length; i ++) {
@@ -34,7 +36,7 @@ app.post('/webhook/', function(req, res){
     console.log(event.sender.id)
     if (event.message && event.message.text) {
       // let text = event.message.text
-      sendTextMessages(sender, ["Hello there, I am Pam, your personal assistant. Let's set you up", "I'll help you get up in the mornings and fulfill your personal goals", "To start, what time do you usually wake up?"])
+      sendTextMessages(sender, ["Hello there, I am Pam, your personal assistant. Let's set you up", "I'll help you get up in the mornings and fulfill your personal goals"])
       resToMorningRoutine(sender)
 
       // console.log('payload', )
@@ -46,9 +48,14 @@ app.post('/webhook/', function(req, res){
       let text = event.postback.payload
       if (text === 'yes') {
         sendTextMessages(sender, ["Meditation, pushups, tea? What's one thing you should you be doing every morning?", "For example, you could respond 'Meditation for 10 minutes', or... 'Read for 20 minutes'?"])
-        continue
+        if (event.postback) {
+          let text = event.postback.payload
+          // startMorningRoutine(sender, text)
+
+          // var user = new User
+
+        }
       } else if (text === 'no') {
-        sendTextMessages(sender, "options.hat's one thing you should you be doing every morning?")
 
       }
     }
@@ -88,16 +95,16 @@ function resToMorningRoutine(sender) {
             "payload": {
                 "template_type": "button",
 
-                "text": "Awesome! Do you have a morning routine you'd like to stick to?",
+                "text": "Awesome! Would you like to add a morning ritual? ie. Push-ups, meditation...",
 
                 "buttons": [{
                       "type": "postback",
                       // "url": "https://www.messenger.com",
-                      "payload": "yes",
+                      "payload": "Yeah!",
                       "title": "yes"
                   }, {
                       "type": "postback",
-                      "title": "no",
+                      "title": "No thanks",
                       "payload": "no",
                   }]
 
@@ -121,27 +128,22 @@ function resToMorningRoutine(sender) {
     })
 }
 
-// function resToMorningRoutine(sender) {
+// function startMorningRoutine(sender, text) {
 //     let messageData = {
 //         "attachment": {
 //             "type": "template",
 //             "payload": {
-//                 "template_type": "generic",
-//                 "elements": [{
-//                     "title": "Awesome! Do you have a morning routine you'd like to stick to?",
-//                     "subtitle": "hihi",
-//                     // "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
-//                     "buttons": [{
-//                         "type": "postback",
-//                         // "url": "https://www.messenger.com",
-//                         "payload": "Payload for first element in a generic bubble",
-//                         "title": "yes"
-//                     }, {
-//                         "type": "postback",
-//                         "title": "no",
-//                         "payload": "Payload for first element in a generic bubble",
-//                     }]
-//                 }]
+//                 "template_type": "button",
+//                 "text": "S",
+//                 "buttons": [{
+//                       "type": "postback",
+//                       "payload": "Meditation for 10 minutes",
+//                       "title": "Meditation for 10 minutes"
+//                   }, {
+//                       "type": "postback",
+//                       "title": "Pushup 10 times",
+//                       "payload": "Pushup 10 times",
+//                   }]
 //             }
 //         }
 //     }
