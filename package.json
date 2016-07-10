@@ -20,7 +20,10 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
+    "find-or-create": "^0.1.2",
     "mongoose": "^4.5.3",
+    "mongoose-find-one-or-create": "^0.2.0",
+    "mongoose-findorcreate": "^0.1.2",
     "request": "^2.73.0"
   }
 }

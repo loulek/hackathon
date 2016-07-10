@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var findOrCreate = require('mongoose-findorcreate')
 
 // Create a connect.js inside the models/ directory that
 // exports your MongoDB URI!
@@ -15,13 +16,12 @@ var userSchema = mongoose.Schema({
   },
   routine:
     {
-      name: String,
-      time: String
+      name: String
     }
   ,
   timeToWakeUP: {
     type: String
   }
 });
-
+userSchema.plugin(findOrCreate);
 module.exports = {User: mongoose.model('User', userSchema)};

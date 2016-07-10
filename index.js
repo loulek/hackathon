@@ -26,53 +26,76 @@ app.listen(app.get('port'), function() {
     console.log('running on port', app.get('port'))
 })
 
+
+// get message
+  // if user does not exist - create user
+  // if user exists:
+    // if user does not have routine, ask routine
+      // set user routine
+    // if user does:
+      // yolo
+
+
 app.post('/webhook/', function(req, res){
   console.log("REQ.BODY===============", req.body)
-
   let messaging_events = req.body.entry[0].messaging
   for (let i = 0; i < messaging_events.length; i ++) {
     let event = req.body.entry[0].messaging[i]
     let sender = event.sender.id
+    var user = User.findOne({facebookId: req.body.entry[0].id}, function(err, user){
+      if (err) {return console.log(err)
+      } else {
+        if (!user && event.message && event.message.text) {
+          console.log("EVENT.MESSAGE=====    =======    ======", event.message);
+          console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
 
-    if (event.message && event.message.text) {
-      console.log("EVENT MESSAGE=====    =======    ======", event.message);
-      console.log("EVENT MESSAGE=====    =======    ======", event.message.text);
+          sendTextMessages(sender, ["Hello there, I am Pam, your personal assistant. Let's set you up", "I'll help you get up in the mornings and fulfill your personal goals"])
+          resToMorningRoutine(sender)
 
-      // let text = event.message.text
-      sendTextMessages(sender, ["Hello there, I am Pam, your personal assistant. Let's set you up", "I'll help you get up in the mornings and fulfill your personal goals"])
-      resToMorningRoutine(sender)
+          // create user
+          var user = new User({facebookId: req.body.entry[0].id})
+          user.save()
+        } else if (user) {
+          console.log('THERE IS A USERRRRRRRRRRRRRRRRRRRR=========');
 
-      // console.log('payload', )
-    }
-    console.log('EVENT =================', event)
-    console.log('EVENT SENDER ID==================', event.sender.id);
-    if (event.postback) {
-      console.log("EVENT POSTBACK PAYLOAD===========", event.postback.payload)
-      let text = event.postback.payload
-      if (text === 'yes') {
-        console.log("MOTHERFUCKING ===========")
-        sendTextMessages(sender, ["Meditation, pushups, tea? What's one thing you should you be doing every morning?", "For example, you could respond 'Meditation for 10 minutes', or... 'Read for 20 minutes'?"])
-        if (event.postback) {
-          let text = event.postback.payload
-          var user = new User({
-            facebookId: req.body.entry[0].id,
-            routine: text
-          })
-          user.save(function (err){
-            if(err){
-              console.log('ERROR================')
+          if (event.postback) {
+            console.log("EVENT POSTBACK PAYLOAD===========", event.postback.payload)
+            let text = event.postback.payload
+            if (text === 'yes') {
+              console.log("MOTHERFUCKING ===========")
+              sendTextMessages(sender, ["Meditation, pushups, tea? What's one thing you should you be doing every morning?", "For example, you could respond 'Meditation for 10 minutes', or... 'Read for 20 minutes'?"])
+              if (event.message && event.message.text) { //NOT PASSING THIS
+                // console.log("EVENT.MESSAGE=====    =======    ======", event.message);
+                // console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
+                console.log("SUCCESS===========================       =======");
+                console.log("EVENT.MESSAGE=====    =======    ======", event.message);
+                console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
+                console.log("EVENT.POSTBACK.PAYLOAD", event.postback.payload);
+                let text = event.postback.payload
+                user.routine.name = event.message.text
+                user.save(function (err, user){
+                  if(err){
+                    console.log('ERROR================')
+                  }
+                  else {
+                    console.log("USER ADDED ===================");
+                  }
+                });
+                //later add
+              }
+            } else if (text === 'no') {
+              // do something else
             }
-            else{
-              console.log("USER ADDED ===================");
-            }
-          });
-//later add
+
         }
-      } else if (text === 'no') {
-
       }
     }
+  });
+
+    console.log('EVENT =================', event)
+    console.log('EVENT SENDER ID==================', event.sender.id);
   }
+  // }
   res.sendStatus(200)
 })
 
