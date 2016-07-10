@@ -105,7 +105,11 @@ app.post('/webhook/', function(req, res){
                 user.save(); //every day initalize list resets
               }
           };
+<<<<<<< HEAD
           if(event.message && event.message.text && user.initializeList){ //c
+=======
+          if(event.message && event.message.text && user.initializeList){
+>>>>>>> ec9c747ff00ad64cefa3ff3d851bd4359f645ba1
             console.log("SUCCESS2===========================       =======");
             console.log("EVENT.MESSAGE=====    =======    ======", event.message);
             console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
@@ -124,6 +128,7 @@ app.post('/webhook/', function(req, res){
             });
           }
           console.log(event);
+<<<<<<< HEAD
           if(event.postback.payload.indexOf('elete')){
             for(var i = 0; i < user.list.length; i++){
               var payload = parseInt(event.postback.payload.slice(event.postback.payload.length-2))
@@ -135,6 +140,21 @@ app.post('/webhook/', function(req, res){
             }
             return;
           }
+=======
+          // if(event.postback.payload.indexOf('elete')){
+          //   for(var i = 0; i < user.list.length; i++){
+          //     console.log("BEST CODE EVER")
+          //     var payload = parseInt(event.postback.payload.slice(event.postback.payload.length-2))
+          //     console.log("PAYLOAD=========",payload);
+          //     if(i === payload){
+          //       user.list.splice(i,1)
+          //       user.save();
+          //       multiButton(sender, 'Here is your updated list:', user.list);
+          //     }
+          //   }
+          //   return;
+          // }
+>>>>>>> ec9c747ff00ad64cefa3ff3d851bd4359f645ba1
       }
       return res.sendStatus(200)
     }
@@ -208,7 +228,11 @@ function resToMorningRoutine(sender) {
 }
 
 function somethingFun(sender, text, url) {
+<<<<<<< HEAD
     var messageData = {
+=======
+    let messageData = {
+>>>>>>> ec9c747ff00ad64cefa3ff3d851bd4359f645ba1
         "attachment": {
             "type": "video",
             "payload": {
