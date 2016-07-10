@@ -46,9 +46,6 @@ app.post('/webhook/', function(req, res){
       if (err) {return console.log(err)
       } else {
         if (!user && event.message && event.message.text) {
-          console.log("EVENT.MESSAGE=====    =======    ======", event.message);
-          console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
-
           sendTextMessages(sender, ["Hello there, I am Pam, your personal assistant. Let's set you up", "I'll help you get up in the mornings and fulfill your personal goals"])
           resToMorningRoutine(sender)
 
@@ -57,36 +54,34 @@ app.post('/webhook/', function(req, res){
           user.save()
         } else if (user) {
           console.log('THERE IS A USERRRRRRRRRRRRRRRRRRRR=========');
-
           if (event.postback) {
+            console.log("SECOND TIME");
             console.log("EVENT POSTBACK PAYLOAD===========", event.postback.payload)
             let text = event.postback.payload
-            if (text === 'yes') {
-              console.log("MOTHERFUCKING ===========")
-              sendTextMessages(sender, ["Meditation, pushups, tea? What's one thing you should you be doing every morning?", "For example, you could respond 'Meditation for 10 minutes', or... 'Read for 20 minutes'?"])
-              if (event.message && event.message.text) { //NOT PASSING THIS
-                // console.log("EVENT.MESSAGE=====    =======    ======", event.message);
-                // console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
-                console.log("SUCCESS===========================       =======");
-                console.log("EVENT.MESSAGE=====    =======    ======", event.message);
-                console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
-                console.log("EVENT.POSTBACK.PAYLOAD", event.postback.payload);
-                let text = event.postback.payload
-                user.routine.name = event.message.text
-                user.save(function (err, user){
-                  if(err){
-                    console.log('ERROR================')
-                  }
-                  else {
-                    console.log("USER ADDED ===================");
-                  }
-                });
-                //later add
+            if (text === 'yes'){
+              if(user.routineQuestion===false){
+                sendTextMessages(sender, ["Meditation, pushups, tea? What's one thing you should you be doing every morning?", "For example, you could respond 'Meditation for 10 minutes', or... 'Read for 20 minutes'?"])
+                user.routineQuestion = true;
+                user.save();
               }
             } else if (text === 'no') {
               // do something else
             }
-
+        }
+        if (event.message && event.message.text && user.routineQuestion) { //NOT PASSING THIS
+          console.log("SUCCESS===========================       =======");
+          console.log("EVENT.MESSAGE=====    =======    ======", event.message);
+          console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
+          user.routine.name = event.message.text
+          user.save(function (err, user){
+            if(err){
+              console.log('ERROR================')
+            }
+            else {
+              console.log("USER ADDED ===================");
+            }
+          });
+          //later add
         }
       }
     }

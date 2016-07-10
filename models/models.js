@@ -21,6 +21,10 @@ var userSchema = mongoose.Schema({
   ,
   timeToWakeUP: {
     type: String
+  },
+  routineQuestion:{
+    type: Boolean,
+    default: false
   }
 });
 userSchema.plugin(findOrCreate);
