@@ -228,11 +228,7 @@ function resToMorningRoutine(sender) {
 }
 
 function somethingFun(sender, text, url) {
-<<<<<<< HEAD
     var messageData = {
-=======
-    let messageData = {
->>>>>>> ec9c747ff00ad64cefa3ff3d851bd4359f645ba1
         "attachment": {
             "type": "video",
             "payload": {
