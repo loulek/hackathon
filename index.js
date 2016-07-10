@@ -66,7 +66,7 @@ function sendTextMessage(sender, text) {
   })
 }
 
-function resToMorningRoutine(sender) {
+function sendGenericMessage(sender) {
     let messageData = {
         "attachment": {
             "type": "template",
@@ -77,26 +77,16 @@ function resToMorningRoutine(sender) {
                     "subtitle": "",
                     // "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
                     "buttons": [{
-                        "type": "web_url",
-                        "url": "https://www.messenger.com",
+                        "type": "postback",
+                        // "url": "https://www.messenger.com",
+                        "payload": "Payload for first element in a generic bubble",
                         "title": "yes"
                     }, {
                         "type": "postback",
                         "title": "no",
                         "payload": "Payload for first element in a generic bubble",
                     }]
-                  }]
-                }
-                // }, {
-                //     "title": "Second card",
-                //     "subtitle": "Element #2 of an hscroll",
-                //     "image_url": "http://messengerdemo.parseapp.com/img/gearvr.png",
-                //     "buttons": [{
-                //         "type": "postback",
-                //         "title": "Postback",
-                //         "payload": "Payload for second element in a generic bubble",
-                //     }],
-                // }]
+                }]
             }
         }
     }
