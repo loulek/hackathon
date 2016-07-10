@@ -38,7 +38,8 @@ app.post('/webhook/', function(req, res){
       sendTextMessage(sender, "To start, what time do you usually wake up?")//recieve text back
       // sendTextMessage(sender, "Sweet")
       resToMorningRoutine(sender)
-      console.log('about to postback')
+      console.log('about to postback', event.postback)
+      // console.log('payload', )
       if (event.postback) {
         console.log("EVENT POSTBACK ", event.postback)
         let text = JSON.stringify(event.postback)
