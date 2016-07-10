@@ -36,10 +36,10 @@ app.post('/webhook/', function(req, res){
       sendTextMessage(sender, "Hello there, I am Pam, your personal assistant. Let's set you up")
       sendTextMessage(sender, "I'll help you get up in the mornings and fulfill your personal goals")
       sendTextMessage(sender, "To start, what time do you usually wake up?")//recieve text back
-      sendTextMessage(sender, "Awesome! Do you have a morning routine you'd like to stick to?") //button yes or no
       // sendTextMessage(sender, "Sweet")
       resToMorningRoutine(sender)
       if (event.postback) {
+        console.log("EVENT POSTBACK ", event.postback)
         let text = JSON.stringify(event.postback)
         if (text === 'yes') {
           sendTextMessage(sender, "Meditation, pushups, tea? What's one thing you should you be doing every morning?")
@@ -83,18 +83,17 @@ function resToMorningRoutine(sender) {
             "payload": {
                 "template_type": "generic",
                 "elements": [{
-                    "title": "Awesome! Do you have a morning routine you'd like to stick to?",
-                    "subtitle": "hihi",
+                    "text": "Awesome! Do you have a morning routine you'd like to stick to?",
                     // "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
                     "buttons": [{
                         "type": "postback",
                         // "url": "https://www.messenger.com",
-                        "payload": "Payload for first element in a generic bubble",
+                        "payload": "yes",
                         "title": "yes"
                     }, {
                         "type": "postback",
                         "title": "no",
-                        "payload": "Payload for first element in a generic bubble",
+                        "payload": "no",
                     }]
                 }]
             }
