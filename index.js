@@ -124,18 +124,23 @@ app.post('/webhook/', function(req, res){
             });
           }
           console.log(event);
-          // if(event.postback.payload.indexOf('elete')){
-          //   for(var i = 0; i < user.list.length; i++){
-          //     var payload = parseInt(event.postback.payload.slice(event.postback.payload.length-2))
-          //     console.log("PAYLOAD=========",payload);
-          //     if(i === payload){
-          //       user.list.splice(i,1)
-          //       user.save();
-          //       multiButton(sender, 'Here is your updated list:', user.list);
-          //     }
-          //   }
-          //   return;
-          // }
+          if(event.postback.payload.indexOf('elete')){
+            for(var i = 0; i < user.list.length; i++){
+              var payload = parseInt(event.postback.payload.slice(event.postback.payload.length-1))
+              console.log("PAYLOAD=========",payload);
+              if(i === payload){
+                user.list.splice(i,1)
+                user.save(function(err,user){
+                  if(err){
+                    console.log('ERROR!', err)
+                  }
+                  else{
+                    multiButton(sender, 'Here is your updated list:', user.list);
+                });
+              }
+            }
+            return;
+          }
       }
       return res.sendStatus(200)
     }
