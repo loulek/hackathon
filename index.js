@@ -120,6 +120,8 @@ app.post('/webhook/', function(req, res){
               else {
                 multiButton(sender, 'Awesome! What would you like to start?', user.list)
                 console.log("List Added ===================");
+                return res.sendStatus(200)
+
               }
             });
           }
@@ -136,6 +138,8 @@ app.post('/webhook/', function(req, res){
                   }
                   else{
                     multiButton(sender, 'Here is your updated list:', user.list);
+                    return res.sendStatus(200)
+
                   }
                 });
               }
@@ -143,7 +147,6 @@ app.post('/webhook/', function(req, res){
             // return;
           }
       }
-      return res.sendStatus(200)
     }
     })
   }
