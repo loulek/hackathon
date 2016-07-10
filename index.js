@@ -40,7 +40,7 @@ app.post('/webhook/', function(req, res){
       // console.log('payload', )
     }
     console.log('EVENT =================', event)
-    console.log('EVENT SENDER ID=================='event.sender.id);
+    console.log('EVENT SENDER ID==================', event.sender.id);
     if (event.postback) {
       console.log("EVENT POSTBACK PAYLOAD===========", event.postback.payload)
       let text = event.postback.payload
