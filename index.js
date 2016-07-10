@@ -136,6 +136,7 @@ app.post('/webhook/', function(req, res){
                   }
                   else{
                     multiButton(sender, 'Here is your updated list:', user.list);
+                  }
                 });
               }
             }
