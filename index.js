@@ -38,20 +38,21 @@ app.post('/webhook/', function(req, res){
       sendTextMessage(sender, "To start, what time do you usually wake up?")//recieve text back
       // sendTextMessage(sender, "Sweet")
       resToMorningRoutine(sender)
-      console.log('about to postback', event.postback)
+
       // console.log('payload', )
-      if (event.postback) {
-        console.log("EVENT POSTBACK ", event.postback)
-        let text = JSON.stringify(event.postback)
-        if (text === 'yes') {
-          sendTextMessage(sender, "Meditation, pushups, tea? What's one thing you should you be doing every morning?")
-          sendTextMessage(sender, "For example, you could respond 'Meditation for 10 minutes', or... 'Read for 20 minutes'?")
-          continue
-        } else if (text === 'no') {
+    }
+    console.log('about to postback', event.postback)
+    console.log('event', event)
+    if (event.postback) {
+      console.log("EVENT POSTBACK ", event.postback)
+      let text = JSON.stringify(event.postback)
+      if (text === 'yes') {
+        sendTextMessage(sender, "Meditation, pushups, tea? What's one thing you should you be doing every morning?")
+        sendTextMessage(sender, "For example, you could respond 'Meditation for 10 minutes', or... 'Read for 20 minutes'?")
+        continue
+      } else if (text === 'no') {
 
-        }
       }
-
     }
   }
   res.sendStatus(200)
