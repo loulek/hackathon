@@ -140,7 +140,7 @@ app.post('/webhook/', function(req, res){
                 });
               }
             }
-            return;
+            // return;
           }
       }
       return res.sendStatus(200)
