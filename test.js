@@ -17,38 +17,44 @@ app.get('/', function (req, res) {
 
 
 app.get('/webhook/', function(req, res) {
+  console.log(req.query)
   if (req.query['hub.verify_token'] === 'my_voice_is_mypassword_verify_me') {
-        res.send(req.query['hub.challenge'])
+        return res.send(req.query['hub.challenge'])
     }
-    res.send('Error, wrong token')
+    return res.send('Error, wrong token')
 })
 
 app.listen(app.get('port'), function() {
     console.log('running on port', app.get('port'))
 })
 
+// ethan debug
+// app.post('/webhook/', function(req, res) {
+//   console.log('ethan debug complete :-)', req.body.entry[0].messaging)
+//   res.send("thx pam");
+// })
+
 app.post('/webhook/', function(req, res){
   let messaging_events = req.body.entry[0].messaging
+
   console.log('messging_event', messaging_events.length)
   for (let i = 0; i < messaging_events.length; i ++) {
-    let event = req.body.entry[0].messaging[i]
-    let sender = event.sender.id
+    console.log(messaging_events[i]);
+    var event = req.body.entry[0].messaging[i]
+    var sender = event.sender.id
 
     var user = User.findOne({facebookId: req.body.entry[0].id}, function(err, user){
-          if (err) {return console.log(err)
+          if (err) {return console.log(err);
           } else {
             if (!user && event.message && event.message.text) {
               sendTextMessages(sender, ["Hello there, I am Pam, your personal assistant. Let's set you up", "I'll help you get up in the mornings and fulfill your personal goals"])
-              resToMorningRoutine(sender)
+              setTimeout(function() {resToMorningRoutine(sender)}, 30)
 
               // create user
               var user = new User({facebookId: req.body.entry[0].id})
               user.save()
             } else if (user && !user.setup) {
-              console.log('THERE IS A USERRRRRRRRRRRRRRRRRRRR=========');
               if (event.postback) {
-                console.log("SECOND TIME");
-                console.log("EVENT POSTBACK PAYLOAD===========", event.postback.payload)
                 let text = event.postback.payload
                 if (text === 'yes'){
                   if(user.routineQuestion===false){
@@ -60,10 +66,7 @@ app.post('/webhook/', function(req, res){
                   // do something else
                 }
             }
-              if (event.message && event.message.text && user.routineQuestion) { //NOT PASSING THIS
-                console.log("SUCCESS===========================       =======");
-                console.log("EVENT.MESSAGE=====    =======    ======", event.message);
-                console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
+              if (event.message && event.message.text && user.routineQuestion) {
                 user.routine.name = event.message.text
                 user.save(function (err, user){
                   if(err){
@@ -80,27 +83,47 @@ app.post('/webhook/', function(req, res){
             }
           } else{
             console.log("YAYAY");
-            somethingFun(sender, 'https://placehold.it/350x150')
-            button(sender, 'Ready to start the day?', 'Start morning routine', 'Start working')
+            console.log("event", event);
+            console.log(req.body.entry[0].messaging)
+            if (event.message && event.message.text){
+              somethingFun(sender, 'http://clips.vorwaerts-gmbh.de/VfE_html5.mp4')
+              button(sender, 'Ready to start the day?', 'Start morning routine', 'Start working')
+              console.log("SUCCESS===========================       =======");
+            }
             if (event.postback) {
-              let text = event.postback.payload
-              if (text === 'Start morning routine'){
+              var text2 = event.postback.payload
+              if (text2 === 'Start morning routine'){
                 button(sender, "Cool, let's get started!", 'Finished', 'Skip for today');
                 //make timers later
-                if (event.postback) {
-                  let text = event.postback.payload
-                  if (text === 'Finished' || text === 'Skip for today'){
-                    sendTextMessages(sender,["Great, what do you have to do today?", "Separate tasks by comma since I'm dumb"]);
-                    if(event.message && event.message.text){
-                      
-                    }
-                  }
-                }
               }
+              if (text2 === 'Finished' || text2 === 'Skip for today' || text2 === 'Start working'){
+                sendTextMessages(sender,["Great, what do you have to do today?", "Separate tasks by comma since I'm dumb"]);
+              }
+          };
+          if(event.message && event.message.text){
+            console.log("SUCCESS2===========================       =======");
+            console.log("EVENT.MESSAGE=====    =======    ======", event.message);
+            console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
+            var listArr = event.message.text.split(',');
+            for(var i = 0; i < listArr.length; i++){
+              user.list.push(listArr[i]);
             }
+            user.save(function (err, user){
+              if(err){
+                console.log('ERROR================')
+              }
+              else {
+                multiButton(sender, 'Awesome! What would you like to start?', user.list)
+                console.log("List Added ===================");
+              }
             });
-      res.sendStatus(200)
+          }
+
+      }
+      return res.sendStatus(200)
     }
+    })
+  }
 })
 
 const token = "EAACGElIklxMBAGeo6OyZBOOPCudxZCun6dF7noz5P3HixXIzeZClJNDkzQLAFZCyl61Thn98jXzuNo6bE85ZBaxmK5bBmutKFR9O9mLuFJl5h6NHl55L1EmslH6u53IbKtLYTqj2FPmIojrv2wpJ0odaS7ZCh5RUY0XXGymp3qxQZDZD"
@@ -171,7 +194,7 @@ function resToMorningRoutine(sender) {
 function somethingFun(sender, url) {
     let messageData = {
         "attachment": {
-            "type": "image",
+            "type": "video",
             "payload": {
               "url": url
             }
@@ -213,6 +236,42 @@ function button(sender, text, button1, button2) {
             }
         }
     }
+    request({
+        url: 'https://graph.facebook.com/v2.6/me/messages',
+        qs: {access_token:token},
+        method: 'POST',
+        json: {
+            recipient: {id:sender},
+            message: messageData,
+        }
+    }, function(error, response, body) {
+        if (error) {
+            console.log('Error sending messages: ', error)
+        } else if (response.body.error) {
+            console.log('Error: ', response.body.error)
+        }
+    })
+}
+
+function multiButton(sender, text, arr) {
+    let messageData = {
+        "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "button",
+                "text": text,
+                "buttons": []
+            }
+        }
+    }
+    arr.forEach(function(button) {
+      var buton = {
+        'type': 'postback',
+        'payload': button,
+        'title': button
+      }
+      messageData.attachment.payload.buttons.push(buton)
+    })
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
         qs: {access_token:token},

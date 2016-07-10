@@ -14,15 +14,24 @@ var userSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  routine:
-    {
+  routine:{
       name: String
-    }
-  ,
+  },
   timeToWakeUP: {
     type: String
   },
   routineQuestion:{
+    type: Boolean,
+    default: false
+  },
+  setup:{
+    type: Boolean,
+    default: false
+  },
+  list:{
+    type: Array,
+  },
+  initializeList:{
     type: Boolean,
     default: false
   }
