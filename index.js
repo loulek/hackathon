@@ -27,13 +27,11 @@ app.listen(app.get('port'), function() {
 })
 
 app.post('/webhook/', function(req, res){
-  console.log(req.body)
-  console.log('received webhook');
+  console.log("REQ.BODY===============", req.body)
   let messaging_events = req.body.entry[0].messaging
   for (let i = 0; i < messaging_events.length; i ++) {
     let event = req.body.entry[0].messaging[i]
     let sender = event.sender.id
-    console.log(event.sender.id)
     if (event.message && event.message.text) {
       // let text = event.message.text
       sendTextMessages(sender, ["Hello there, I am Pam, your personal assistant. Let's set you up", "I'll help you get up in the mornings and fulfill your personal goals"])
@@ -41,10 +39,10 @@ app.post('/webhook/', function(req, res){
 
       // console.log('payload', )
     }
-    console.log('about to postback', event.postback)
-    console.log('event', event)
+    console.log('EVENT =================', event)
+    console.log('EVENT SENDER ID=================='event.sender.id);
     if (event.postback) {
-      console.log("EVENT POSTBACK ", event.postback)
+      console.log("EVENT POSTBACK PAYLOAD===========", event.postback.payload)
       let text = event.postback.payload
       if (text === 'yes') {
         sendTextMessages(sender, ["Meditation, pushups, tea? What's one thing you should you be doing every morning?", "For example, you could respond 'Meditation for 10 minutes', or... 'Read for 20 minutes'?"])
