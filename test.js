@@ -63,7 +63,9 @@ app.post('/webhook/', function(req, res){
                     user.save();
                   }
                 } else if (text === 'no') {
-                  // do something else
+                  sendTextMessages(sender, ["Slow to rise, huh? You can always go back and add a routine later"])
+                  user.routineQuestion = true;
+                  user.save();
                 }
             }
               if (event.message && event.message.text && user.routineQuestion) {
@@ -73,7 +75,7 @@ app.post('/webhook/', function(req, res){
                     console.log('ERROR================')
                   }
                   else {
-                    sendTextMessages(sender, ["You're all set up, from now on I'll remind you daily!"])
+                    sendTextMessages(sender, ["You're all set up, from now on I'll remind you daily!", "If you'd like to start now, say something..."])
                     user.setup = true;
                     user.save()
                     console.log("USER ADDED ===================");
@@ -85,10 +87,11 @@ app.post('/webhook/', function(req, res){
             console.log("YAYAY");
             console.log("event", event);
             console.log(req.body.entry[0].messaging)
-            if (event.message && event.message.text){
-              somethingFun(sender, 'http://clips.vorwaerts-gmbh.de/VfE_html5.mp4')
-              button(sender, 'Ready to start the day?', 'Start morning routine', 'Start working')
+            if (event.message && event.message.text && !user.initializeList){
+              somethingFun(sender, "This adorable video should wake you up!", 'http://clips.vorwaerts-gmbh.de/VfE_html5.mp4')
+              setTimeout(function(){button(sender, 'Ready to start the day?', 'Start morning routine', 'Start working')}, 2000)
               console.log("SUCCESS===========================       =======");
+
             }
             if (event.postback) {
               var text2 = event.postback.payload
@@ -98,9 +101,11 @@ app.post('/webhook/', function(req, res){
               }
               if (text2 === 'Finished' || text2 === 'Skip for today' || text2 === 'Start working'){
                 sendTextMessages(sender,["Great, what do you have to do today?", "Separate tasks by comma since I'm dumb"]);
+                user.initializeList=true;
+                user.save(); //every day initalize list resets
               }
           };
-          if(event.message && event.message.text){
+          if(event.message && event.message.text && user.initializeList){ //c
             console.log("SUCCESS2===========================       =======");
             console.log("EVENT.MESSAGE=====    =======    ======", event.message);
             console.log("EVENT.MESSAGE.TEXT =====    =======    ======", event.message.text);
@@ -118,7 +123,18 @@ app.post('/webhook/', function(req, res){
               }
             });
           }
-
+          console.log(event);
+          if(event.postback.payload.indexOf('elete')){
+            for(var i = 0; i < user.list.length; i++){
+              var payload = parseInt(event.postback.payload.slice(event.postback.payload.length-2))
+              if(i === payload){
+                user.list.splice(i,1)
+                user.save();
+                multiButton(sender, 'List updated', user.list);
+              }
+            }
+            return;
+          }
       }
       return res.sendStatus(200)
     }
@@ -191,13 +207,14 @@ function resToMorningRoutine(sender) {
     })
 }
 
-function somethingFun(sender, url) {
-    let messageData = {
+function somethingFun(sender, text, url) {
+    var messageData = {
         "attachment": {
             "type": "video",
             "payload": {
               "url": url
-            }
+            },
+            'text': text
         }
     }
     request({
@@ -254,7 +271,7 @@ function button(sender, text, button1, button2) {
 }
 
 function multiButton(sender, text, arr) {
-    let messageData = {
+    var messageData = {
         "attachment": {
             "type": "template",
             "payload": {
@@ -264,14 +281,22 @@ function multiButton(sender, text, arr) {
             }
         }
     }
-    arr.forEach(function(button) {
+    // arr.forEach(function(button) {
+    //   var buton = {
+    //     'type': 'postback',
+    //     'payload': button,
+    //     'title': button
+    //   }
+    for(var i = 0; i < arr.length; i++){
       var buton = {
         'type': 'postback',
-        'payload': button,
-        'title': button
+        'payload':'delete'+i.toString(),
+        'title': arr[i]
       }
       messageData.attachment.payload.buttons.push(buton)
-    })
+    }
+
+
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
         qs: {access_token:token},
