@@ -3,7 +3,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
-var User = require('../models/models/user');
+var User = require('./models/models').User;
 
 app.set('port', (process.env.PORT)|| 3000)
 

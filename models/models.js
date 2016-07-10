@@ -13,12 +13,12 @@ var userSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  routine: {
+  routine:
     {
       name: String,
       time: String
     }
-  },
+  ,
   timeToWakeUP: {
     type: String
   }
